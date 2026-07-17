@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Tiendita</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Work+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBF6EA;
+    --paper-dark:#F1E9D8;
+    --ink:#2B211C;
+    --pink:#E23D72;
+    --pink-dark:#C22759;
+    --teal:#136B63;
+    --mustard:#F2A93B;
+    --stripe:#D6472E;
+    --line:#DCD0B8;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ---------- Header / awning ---------- */
+  .awning{
+    background:repeating-linear-gradient(
+      115deg,
+      var(--stripe) 0 26px,
+      var(--paper-dark) 26px 52px
+    );
+    padding:6px 0 0 0;
+  }
+  .awning-inner{
+    background:var(--ink);
+    padding:30px 20px 26px;
+    text-align:center;
+    position:relative;
+  }
+  .awning-inner h1{
+    font-family:'Baloo 2',cursive;
+    font-weight:800;
+    font-size:clamp(2rem,6vw,3rem);
+    color:var(--paper);
+    margin:0;
+    letter-spacing:.5px;
+    text-shadow:2px 2px 0 var(--pink);
+  }
+  .awning-inner p{
+    font-family:'Baloo 2',cursive;
+    color:var(--mustard);
+    margin:6px 0 0;
+    font-size:clamp(.95rem,2.2vw,1.15rem);
+    font-weight:500;
+  }
+
+  /* ---------- Layout ---------- */
+  .wrap{
+    max-width:1100px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+    display:grid;
+    grid-template-columns:1fr 340px;
+    gap:28px;
+    align-items:start;
+  }
+  @media (max-width:820px){
+    .wrap{grid-template-columns:1fr;}
+  }
+
+  h2.section-title{
+    font-family:'Baloo 2',cursive;
+    font-size:1.3rem;
+    font-weight:700;
+    margin:0 0 16px;
+    color:var(--ink);
+  }
+  h2.section-title span{color:var(--pink);}
+
+  /* ---------- Product grid ---------- */
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+    gap:16px;
+  }
+
+  .card{
+    background:#fff;
+    border-radius:14px;
+    padding:16px 14px 14px;
+    border:1px solid var(--line);
+    box-shadow:0 3px 0 var(--line);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    position:relative;
+    transition:transform .15s ease;
+  }
+  .card.out{opacity:.55;}
+  .card .emoji{font-size:2.1rem;line-height:1;}
+  .card h3{
+    margin:0;
+    font-family:'Baloo 2',cursive;
+    font-size:1.05rem;
+  }
+
+  .price-tag{
+    align-self:flex-start;
+    background:var(--teal);
+    color:#fff;
+    font-family:'Space Mono',monospace;
+    font-weight:700;
+    font-size:.95rem;
+    padding:3px 10px 3px 8px;
+    border-radius:0 6px 6px 0;
+    position:relative;
+    margin-left:-14px;
+  }
+  .price-tag::before{
+    content:"";
+    position:absolute;
+    left:-8px;top:0;
+    border-top:12.5px solid transparent;
+    border-bottom:12.5px solid transparent;
+    border-right:8px solid var(--teal);
+  }
+
+  .stock{
+    font-size:.75rem;
+    font-weight:600;
+    color:var(--ink);
+    background:var(--mustard);
+    display:inline-block;
+    padding:2px 9px;
+    border-radius:999px;
+    width:fit-content;
+  }
+  .stock.low{background:#f2c9b0;color:var(--stripe);}
+  .stock.zero{background:#eee;color:#999;}
+
+  .qty-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-top:auto;
+  }
+  .qty-btn{
+    width:28px;height:28px;
+    border-radius:8px;
+    border:1px solid var(--line);
+    background:var(--paper);
+    color:var(--ink);
+    font-size:1rem;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .qty-btn:hover{background:var(--paper-dark);}
+  .qty-val{
+    width:32px;
+    text-align:center;
+    font-family:'Space Mono',monospace;
+    font-weight:700;
+  }
+  .add-btn{
+    margin-top:6px;
+    background:var(--pink);
+    color:#fff;
+    border:none;
+    padding:9px 10px;
+    border-radius:9px;
+    font-family:'Work Sans',sans-serif;
+    font-weight:600;
+    font-size:.9rem;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .add-btn:hover{background:var(--pink-dark);}
+  .add-btn:disabled{background:#ccc;cursor:not-allowed;}
+
+  .card-msg{
+    font-size:.75rem;
+    color:var(--stripe);
+    font-weight:600;
+    min-height:14px;
+  }
+
+  /* ---------- Ticket ---------- */
+  .ticket-wrap{position:sticky; top:20px;}
+  .ticket{
+    background:#fff;
+    border:1px dashed #bdb195;
+    border-radius:4px;
+    padding:20px 18px 8px;
+    font-family:'Space Mono',monospace;
+    font-size:.82rem;
+    position:relative;
+    box-shadow:0 6px 18px rgba(43,33,28,.08);
+  }
+  .ticket::before,.ticket::after{
+    content:"";
+    position:absolute;
+    left:0;right:0;
+    height:10px;
+    background:
+      radial-gradient(circle at 8px 5px, transparent 5px, #fff 5.5px) repeat-x;
+    background-size:16px 10px;
+  }
+  .ticket::before{top:-9px;}
+  .ticket::after{bottom:-9px;transform:rotate(180deg);}
+
+  .ticket h3{
+    font-family:'Baloo 2',cursive;
+    text-align:center;
+    margin:0 0 2px;
+    font-size:1.05rem;
+    color:var(--ink);
+  }
+  .ticket .sub{
+    text-align:center;
+    font-size:.68rem;
+    color:#8a8072;
+    margin-bottom:10px;
+  }
+  .ticket hr{
+    border:none;
+    border-top:1px dashed #cfc3a8;
+    margin:10px 0;
+  }
+  .line{
+    display:flex;
+    justify-content:space-between;
+    gap:8px;
+    margin:3px 0;
+  }
+  .line .name{color:var(--ink);}
+  .line .amt{font-weight:700;}
+  .empty-note{
+    text-align:center;
+    color:#a89d87;
+    padding:14px 0;
+    font-size:.78rem;
+  }
+
+  .totals .line.grand{
+    font-size:1rem;
+    font-weight:700;
+    color:var(--pink-dark);
+  }
+  .totals .line.desc .amt{color:var(--teal);}
+
+  .finalize-btn{
+    width:100%;
+    margin-top:12px;
+    background:var(--ink);
+    color:var(--paper);
+    border:none;
+    padding:12px;
+    border-radius:9px;
+    font-family:'Baloo 2',cursive;
+    font-weight:700;
+    font-size:1rem;
+    letter-spacing:.3px;
+    cursor:pointer;
+  }
+  .finalize-btn:hover{background:#000;}
+  .finalize-btn:disabled{background:#ccc;color:#888;cursor:not-allowed;}
+
+  .new-order-btn{
+    width:100%;
+    margin-top:10px;
+    background:none;
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:9px;
+    border-radius:9px;
+    font-family:'Work Sans',sans-serif;
+    font-weight:600;
+    font-size:.85rem;
+    cursor:pointer;
+  }
+  .new-order-btn:hover{background:var(--paper-dark);}
+
+  /* stamp */
+  .stamp-zone{position:relative; min-height:0;}
+  .stamp{
+    position:absolute;
+    top:-10px; right:6px;
+    width:96px;height:96px;
+    border:4px solid var(--teal);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;
+    color:var(--teal);
+    font-family:'Baloo 2',cursive;
+    font-weight:800;
+    font-size:.85rem;
+    line-height:1.05;
+    transform:rotate(-14deg) scale(1);
+    opacity:.85;
+    mix-blend-mode:multiply;
+    pointer-events:none;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .stamp{
+      animation:stampIn .45s cubic-bezier(.2,1.4,.4,1) both;
+    }
+  }
+  @keyframes stampIn{
+    0%{transform:rotate(-14deg) scale(3.2);opacity:0;}
+    70%{opacity:.9;}
+    100%{transform:rotate(-14deg) scale(1);opacity:.85;}
+  }
+
+  :focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
+
+  footer.hint{
+    text-align:center;
+    font-size:.72rem;
+    color:#a89d87;
+    padding-bottom:20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="awning">
+  <div class="awning-inner">
+    <h1>La Tiendita</h1>
+    <p id="subtitle">¿Qué estarías llevando el día de hoy?</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <div>
+    <h2 class="section-title">Productos <span>disponibles</span></h2>
+    <div class="grid" id="grid"></div>
+  </div>
+
+  <div class="ticket-wrap">
+    <div class="stamp-zone">
+      <div class="ticket" id="ticket">
+        <h3>Ticket de compra</h3>
+        <div class="sub" id="ticketDate"></div>
+        <hr>
+        <div id="ticketLines"><div class="empty-note">Aún no llevas nada. ¡Agrega algo del estante!</div></div>
+        <div id="ticketTotalsBlock" style="display:none;">
+          <hr>
+          <div class="totals" id="totalsBox"></div>
+        </div>
+      </div>
+    </div>
+    <button class="finalize-btn" id="finalizeBtn" disabled>Finalizar compra</button>
+    <button class="new-order-btn" id="newOrderBtn" style="display:none;">Iniciar nueva compra</button>
+  </div>
+</div>
+
+<footer class="hint">precios en pesos MX · el inventario se descuenta con cada compra</footer>
+
+<script>
+const productos = [
+  {nombre:"Leche",     precio:45.00, existencias:30, emoji:"🥛"},
+  {nombre:"Huevo",     precio:56.00, existencias:120, emoji:"🥚"},
+  {nombre:"Jamón",     precio:24.50, existencias:35, emoji:"🍖"},
+  {nombre:"Salchicha", precio:23.50, existencias:35, emoji:"🌭"},
+  {nombre:"Tomate",    precio:39.00, existencias:50, emoji:"🍅"},
+];
+
+// cantidad seleccionada por tarjeta (antes de agregar)
+const seleccion = productos.map(()=>1);
+// carrito: {indice, cantidad, importe}
+let carrito = [];
+let finalizado = false;
+
+const grid = document.getElementById('grid');
+const ticketLines = document.getElementById('ticketLines');
+const ticketTotalsBlock = document.getElementById('ticketTotalsBlock');
+const totalsBox = document.getElementById('totalsBox');
+const finalizeBtn = document.getElementById('finalizeBtn');
+const newOrderBtn = document.getElementById('newOrderBtn');
+const stampZone = document.getElementById('stamp-zone');
+const ticketDate = document.getElementById('ticketDate');
+
+function money(n){ return '$' + n.toFixed(2); }
+
+function renderDate(){
+  const d = new Date();
+  ticketDate.textContent = d.toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'}) +
+    '  ·  ' + d.toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit'});
+}
+
+function renderGrid(){
+  grid.innerHTML = '';
+  productos.forEach((p, i)=>{
+    const card = document.createElement('div');
+    card.className = 'card' + (p.existencias === 0 ? ' out' : '');
+
+    const stockClass = p.existencias === 0 ? 'zero' : (p.existencias <= 10 ? 'low' : '');
+    const stockLabel = p.existencias === 0 ? 'Agotado' : `Existencias: ${p.existencias}`;
+
+    card.innerHTML = `
+      <div class="emoji">${p.emoji}</div>
+      <h3>${p.nombre}</h3>
+      <div class="price-tag">${money(p.precio)}</div>
+      <div class="stock ${stockClass}">${stockLabel}</div>
+      <div class="qty-row">
+        <button class="qty-btn" data-act="menos" data-i="${i}" ${finalizado?'disabled':''}>−</button>
+        <span class="qty-val" id="qty-${i}">${seleccion[i]}</span>
+        <button class="qty-btn" data-act="mas" data-i="${i}" ${finalizado?'disabled':''}>+</button>
+      </div>
+      <button class="add-btn" data-i="${i}" ${p.existencias===0 || finalizado ? 'disabled' : ''}>Agregar al ticket</button>
+      <div class="card-msg" id="msg-${i}"></div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function renderTicket(){
+  if(carrito.length === 0){
+    ticketLines.innerHTML = '<div class="empty-note">Aún no llevas nada. ¡Agrega algo del estante!</div>';
+    finalizeBtn.disabled = true;
+    return;
+  }
+  finalizeBtn.disabled = finalizado;
+  ticketLines.innerHTML = carrito.map(item=>{
+    const p = productos[item.indice];
+    return `<div class="line">
+      <span class="name">${p.nombre} x${item.cantidad}</span>
+      <span class="amt">${money(item.importe)}</span>
+    </div>`;
+  }).join('');
+}
+
+function subtotalActual(){
+  return carrito.reduce((acc,item)=>acc+item.importe,0);
+}
+
+function agregar(i){
+  const cant = seleccion[i];
+  const p = productos[i];
+  const msg = document.getElementById(`msg-${i}`);
+  if(cant > p.existencias){
+    msg.textContent = `Solo hay ${p.existencias} piezas disponibles.`;
+    return;
+  }
+  msg.textContent = '';
+  const importe = cant * p.precio;
+  p.existencias -= cant;
+
+  const existente = carrito.find(it=>it.indice === i);
+  if(existente){
+    existente.cantidad += cant;
+    existente.importe += importe;
+  } else {
+    carrito.push({indice:i, cantidad:cant, importe});
+  }
+  seleccion[i] = 1;
+  renderGrid();
+  renderTicket();
+}
+
+grid.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const i = Number(btn.dataset.i);
+  if(btn.dataset.act === 'mas'){
+    if(seleccion[i] < productos[i].existencias) seleccion[i]++;
+    document.getElementById(`qty-${i}`).textContent = seleccion[i];
+  } else if(btn.dataset.act === 'menos'){
+    if(seleccion[i] > 1) seleccion[i]--;
+    document.getElementById(`qty-${i}`).textContent = seleccion[i];
+  } else if(btn.classList.contains('add-btn')){
+    agregar(i);
+  }
+});
+
+finalizeBtn.addEventListener('click', ()=>{
+  if(carrito.length === 0) return;
+  const subtotal = subtotalActual();
+  const descuento = subtotal * 0.15;
+  const subtotalConDescuento = subtotal - descuento;
+  const iva = subtotalConDescuento * 0.16;
+  const total = subtotalConDescuento + iva;
+
+  totalsBox.innerHTML = `
+    <div class="line"><span class="name">Subtotal</span><span class="amt">${money(subtotal)}</span></div>
+    <div class="line desc"><span class="name">Descuento (15%)</span><span class="amt">−${money(descuento)}</span></div>
+    <div class="line"><span class="name">IVA (16%)</span><span class="amt">+${money(iva)}</span></div>
+    <div class="line grand"><span class="name">Total a pagar</span><span class="amt">${money(total)}</span></div>
+  `;
+  ticketTotalsBlock.style.display = 'block';
+  finalized_ui();
+});
+
+function finalized_ui(){
+  finalizado = true;
+  finalizeBtn.style.display = 'none';
+  newOrderBtn.style.display = 'block';
+  renderGrid();
+
+  const stamp = document.createElement('div');
+  stamp.className = 'stamp';
+  stamp.textContent = '¡GRACIAS POR SU COMPRA!';
+  document.querySelector('.stamp-zone').appendChild(stamp);
+}
+
+newOrderBtn.addEventListener('click', ()=>{
+  finalizado = false;
+  carrito = [];
+  ticketTotalsBlock.style.display = 'none';
+  const stamp = document.querySelector('.stamp');
+  if(stamp) stamp.remove();
+  finalizeBtn.style.display = 'block';
+  newOrderBtn.style.display = 'none';
+  renderDate();
+  renderGrid();
+  renderTicket();
+});
+
+renderDate();
+renderGrid();
+renderTicket();
+</script>
+
+</body>
+</html>
